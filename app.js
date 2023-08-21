@@ -15,7 +15,13 @@ const port = process.env.PORT || 8000;
 (async () => {
     try {
         mongoose.connect(dbKey)
-        app.use(cors())
+        app.use(cors({
+            "origin": "*",
+            "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+            "preflightContinue": false,
+            "optionsSuccessStatus": 200,
+            allowedHeaders: ['Content-Type', 'Authorization']
+        }))
         app.use('/api', authRoutes)
         app.use('/api', userRoutes)
         app.use('/api/group', groupRoutes)
