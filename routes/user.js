@@ -23,6 +23,7 @@ router.patch('/user', jsonParser, validateToken, async (req, res) => {
 
 })
 
+
 router.get('/user', jsonParser, validateToken, async (req, res) => {
     const { id } = req.body.authorization
     try {
