@@ -3,14 +3,15 @@ const Group = require('../schemas/group')
 const User = require('../schemas/user');
 const TaskGroup = require("../schemas/taskGroup");
 const Task = require("../schemas/task");
-
+const validateToken = require('../utils/validateToken.js')
 
 const router = Router()
 const jsonParser = json()
 
 
-router.post('/create', jsonParser, async (req, res) => {
-    const { name, password, userId } = req.body
+router.post('/create', jsonParser, validateToken, async (req, res) => {
+    const { name, password, authorization } = req.body
+    const { id: userId } = authorization
     try {
         const group = await Group.create({ name, password, creatorId: userId })
 
@@ -35,8 +36,9 @@ router.post('/create', jsonParser, async (req, res) => {
 
 })
 
-router.delete('/delete', jsonParser, async (req, res) => {
-    const { userId, groupId } = req.body
+router.delete('/delete', jsonParser, validateToken, async (req, res) => {
+    const { groupId, authorization } = req.body
+    const { id: userId } = authorization
     try {
         const group = await Group.findById(groupId)
 
@@ -134,8 +136,9 @@ router.delete('/delete', jsonParser, async (req, res) => {
 
 })
 
-router.post('/connect', jsonParser, async (req, res) => {
-    const { groupId, password, userId } = req.body
+router.post('/connect', jsonParser, validateToken, async (req, res) => {
+    const { groupId, password, authorization } = req.body
+    const { id: userId } = authorization
     try {
         const group = await Group.findById(groupId)
 
@@ -176,8 +179,9 @@ router.post('/connect', jsonParser, async (req, res) => {
     }
 
 })
-router.post('/page', jsonParser, async (req, res) => {
-    const { groupId, userId } = req.body
+router.post('/page', jsonParser, validateToken, async (req, res) => {
+    const { groupId, authorization } = req.body
+    const { id: userId } = authorization
     try {
         const group = await Group.findById(groupId)
         const user = await User.findById(userId)
