@@ -3,13 +3,14 @@ const TaskGroup = require('../schemas/taskGroup')
 const Group = require('../schemas/group');
 const User = require("../schemas/user");
 const Task = require("../schemas/task");
-
+const validateToken = require('../utils/validateToken.js')
 
 const router = Router()
 const jsonParser = json()
 
-router.post('/create', jsonParser, async (req, res) => {
-    const { groupId, creatorId, name, color, personsId, dates } = req.body
+router.post('/create', jsonParser, validateToken, async (req, res) => {
+    const { groupId, authorization, name, color, personsId, dates } = req.body
+    const { id: creatorId } = authorization
     try {
         const group = await Group.findById(groupId)
 
@@ -40,8 +41,9 @@ router.post('/create', jsonParser, async (req, res) => {
     }
 })
 
-router.delete('/delete', jsonParser, async (req, res) => {
-    const { groupId, userId, taskGroupId } = req.body
+router.delete('/delete', jsonParser, validateToken, async (req, res) => {
+    const { groupId, authorization, taskGroupId } = req.body
+    const { id: userId } = authorization
     try {
         const group = await Group.findById(groupId)
 
