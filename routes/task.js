@@ -2,12 +2,14 @@ const { Router, json } = require("express");
 const Task = require('../schemas/task')
 const Group = require('../schemas/group')
 const TaskGroup = require('../schemas/taskGroup')
+const validateToken = require('../utils/validateToken.js')
 
 const router = Router()
 const jsonParser = json()
 
-router.post('/create', jsonParser, async (req, res) => {
-    const { taskGroupId, groupId, name, creatorId, personsId, taskDate, taskStatus } = req.body
+router.post('/create', jsonParser, validateToken, async (req, res) => {
+    const { taskGroupId, groupId, name, authorization, personsId, taskDate, taskStatus } = req.body
+    const { id: creatorId } = authorization
     try {
         const taskGroup = await TaskGroup.findById(taskGroupId)
 
@@ -51,9 +53,10 @@ router.post('/get', jsonParser, async (req, res) => {
     }
 })
 
-router.delete('/delete', jsonParser, async (req, res) => {
+router.delete('/delete', jsonParser, validateToken, async (req, res) => {
 
-    const { userId, taskId, taskGroupId, groupId } = req.body
+    const { taskId, taskGroupId, groupId, authorization } = req.body
+    const { id: userId } = authorization
     try {
         const task = await Task.findById(taskId)
 
@@ -75,15 +78,15 @@ router.delete('/delete', jsonParser, async (req, res) => {
 
         return res.sendStatus(200)
     } catch (e) {
-        console.log(e)
         res.sendStatus(500);
     }
 })
 
 
-router.patch('/edit', jsonParser, async (req, res) => {
+router.patch('/edit', jsonParser, validateToken, async (req, res) => {
 
-    const { taskStatus, taskId, userId, groupId, taskGroupId } = req.body
+    const { taskStatus, taskId, authorization, groupId, taskGroupId } = req.body
+    const { id: userId } = authorization
     try {
         const task = await Task.findById(taskId)
 
